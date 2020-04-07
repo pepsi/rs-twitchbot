@@ -3,6 +3,8 @@ use std::net::TcpStream;
 use std::char;
 use regex::Regex;
 use hexdump;
+use std::collections::HashMap;
+
 // liechtenstein
 // oauth:q9o9s9xyto1sffu72gwn5l6dmhleqd
 #[derive(Debug)]
@@ -11,6 +13,10 @@ struct Message<'a> {
     content : &'a str,
     channel : &'a str,
     _stream : &'a TcpStream
+}
+struct Command<'a>{
+    name: &'a str,
+    func: &'a dyn Fn()
 }
 impl Message<'_> {
     fn send_message(&mut self, message: &str){
@@ -28,8 +34,30 @@ fn on_message(mut message: Message){
         message.send_message("Test!");
     }
 }
+fn cmd1(){
+    println!("Here is command 1");
+}
 fn main() -> std::io::Result<()> {
     let mut stream = TcpStream::connect("irc.chat.twitch.tv:6667").expect("Connection to server failed!");
+    let mut commands: HashMap<&str, Command> = HashMap::new();
+
+    let command1 = Command{
+        name: "Command-1",
+        func: &cmd1
+    }; 
+    let command2 = Command{
+        name: "Command-2",
+        func: &||{
+            println!("Inline Command 2");
+        }
+    };
+    commands.insert("command-1", command1);
+    commands.insert("command-2", command2);
+
+    (commands["command-1"].func)();
+    
+    
+    //Send message macro, not used much
     macro_rules! send_message {
         ($channel:expr, $message:expr) => (
             let _w = stream.write_all(format!("PRIVMSG #{} :{}\n\r", $channel, $message).as_bytes());
