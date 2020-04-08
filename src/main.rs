@@ -119,8 +119,12 @@ fn main() -> std::io::Result<()> {
         let mut buffer = vec![0; 2048];
         //read stream into said buffer
         stream.read(&mut buffer)?;
-        //convert buffer to utf and trim null bytes from the end
-        let mut msg = String::from_utf8(buffer).expect("Invalid UTF-8");
+        //convert buffer to string and trim null bytes from the end
+        let temp_msg = String::from_utf8(buffer);
+        if temp_msg.is_err(){
+            continue;
+        }
+        let mut msg = temp_msg.expect("I didnt think this could be called :/");
         msg = msg.trim_matches(char::from(0)).to_string();
         //Handle twitch ping requests
         if msg == "PING :tmi.twitch.tv\n" {
