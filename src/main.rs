@@ -36,14 +36,14 @@ fn on_message(mut ctx: Context){
     println!("{{\n  Username: {}\n  Channel: {}\n  Content: {}\n}}", ctx.message.username, ctx.message.channel, ctx.message.content);
     // Debug to see the trailing characters. 0D: \r, 0A: \n. 
     // http://dc.org/files/asciitable.pdf
-    hexdump::hexdump(ctx.message.content.as_bytes());
-    //hard coded commands. i need to remove.
+    // hexdump::hexdump(ctx.message.content.as_bytes());
 }
 fn on_command(mut ctx: Context){
-    if ctx.message.content == "!test"{
-        &ctx.message.send_message("Test!");
+    if ctx.commands.contains_key(ctx.command_name.unwrap()){
+        (ctx.commands[ctx.command_name.unwrap()].func)(ctx);
+    }else{
+        ctx.message.send_message(&format!("Could not find command {}.", ctx.command_name.unwrap()));
     }
-    (ctx.commands[ctx.command_name.unwrap()].func)(ctx);
 }
 fn cmd1(mut ctx: Context){
     ctx.message.send_message("Command 1 invoked!");
