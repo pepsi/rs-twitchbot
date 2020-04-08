@@ -32,13 +32,7 @@ struct Context<'a>{
 
 }
 fn on_message(mut ctx: Context){
-    let maxLength: u8 = 128;
-    let content = if ctx.message.content.len() > 100 {
-        &ctx.message.content[..100]
-    }else{
-        ctx.message.content
-    };
-    println!("{:>25}@{:<25}: {}", ctx.message.username, ctx.message.channel, content);
+    println!("{:>25}@{:<25}: {}", ctx.message.username, ctx.message.channel, ctx.message.content);
     /* 
     Debug to see the trailing characters. 0D: \r, 0A: \n. 
     http://dc.org/files/asciitable.pdf
