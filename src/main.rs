@@ -38,8 +38,6 @@ fn on_message(mut ctx: Context){
     // http://dc.org/files/asciitable.pdf
     hexdump::hexdump(ctx.message.content.as_bytes());
     //hard coded commands. i need to remove.
-   
-
 }
 fn on_command(mut ctx: Context){
     if ctx.message.content == "!test"{
@@ -111,7 +109,6 @@ fn main() -> std::io::Result<()> {
             //call message event
             print!("{:?}", m);
             //Create context object so commands can have proper information when invoked.
-            
             if m.content.starts_with("!"){
                 let parts: Vec<&str> = m.content.split_ascii_whitespace().collect();
                 if parts[0].starts_with(prefix){
