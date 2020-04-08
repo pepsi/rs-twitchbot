@@ -52,7 +52,17 @@ fn cmd1(mut ctx: Context){
 }
 fn main() -> std::io::Result<()> {
     let prefix: &str = "omerdied.";
-    
+    let channels = [
+    //     "thegameawards",
+    //  "dota2ti",
+    //   "fortnite",
+    //    "xqcow",
+    //     "timthetatman",
+    //      "brax",
+    //       "myth",
+    //        "drdisrespect",
+            "liechtenstein"
+            ];
     let mut stream: TcpStream = TcpStream::connect("irc.chat.twitch.tv:6667").expect("Connection to server failed!");
     let mut commands: HashMap<&str, Command> = HashMap::new();
     let command1 = Command{
@@ -102,14 +112,9 @@ fn main() -> std::io::Result<()> {
     */
     stream.write(format!("PASS {}\n\r", dotenv::var("oauth").unwrap()).as_bytes()).expect("Failed to send password");
     stream.write(b"NICK liechtenstein\n\r").expect("Failed to send nickname");
-    // stream.write(b"JOIN #liechtenstein\n\r").expect("Failed to join channel");
-    // stream.write(b"JOIN #timthetatman\n\r").expect("Failed to join channel");
-    // stream.write(b"JOIN #xqcow\n\r").expect("Failed to join channel");
-    join_channel!("liechtenstein");
-    join_channel!("timthetatman");
-    join_channel!("xqcow");
-    join_channel!("summit1g");
-
+    for channel in channels.iter(){
+        join_channel!(channel);
+    }
     /*
     Test send_message! macro.
     */
