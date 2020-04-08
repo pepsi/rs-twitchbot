@@ -67,6 +67,20 @@ fn main() -> std::io::Result<()> {
     };
     commands.insert("command-1", command1);
     commands.insert("command-2", command2);
+    commands.insert("help", Command{
+        name: "Help",
+        func: &|mut ctx|{
+            let mut command_names: Vec<&str> = ctx.commands
+                .into_iter()
+                .map(|c|{
+                    println!("{}", c.0);
+                    return *c.0;
+                })
+                .collect();
+                command_names.sort_by(|a ,b| a.to_lowercase().cmp(&b.to_lowercase()));
+            ctx.message.send_message(&format!("The list of valid commands are: {}", command_names.join(", ")));
+        }
+    });
     
     //Send message macro, not used much
     macro_rules! send_message {
