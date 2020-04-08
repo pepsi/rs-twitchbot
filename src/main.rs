@@ -83,7 +83,12 @@ fn main() -> std::io::Result<()> {
             ctx.message.send_message(&format!("The list of valid commands are: {}", command_names.join(", ")));
         }
     });
-    
+    commands.insert("debug",Command{
+        name: "debug",
+        func: &|mut ctx: Context|{
+            ctx.message.send_message(&ctx.args.unwrap().join(", "));
+        }
+    });
     //Send message macro, not used much
     macro_rules! send_message {
         ($channel:expr, $message:expr) => (
