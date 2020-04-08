@@ -60,7 +60,8 @@ fn main() -> std::io::Result<()> {
     }; 
     let command2 = Command{
         name: "Command #2",
-        func: &|test|{
+        func: &|mut ctx|{
+            ctx.message.send_message("Inline command 2 invoked!");
             println!("Inline Command 2");
         }
     };
@@ -126,7 +127,7 @@ fn main() -> std::io::Result<()> {
                     message: m,
                     commands: &commands,
                     command_name: None,
-                    args: None
+                    args: None  
                 };
                 on_message(ctx);
             }
