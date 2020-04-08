@@ -127,7 +127,7 @@ fn main() -> std::io::Result<()> {
         let mut msg = temp_msg.expect("I didnt think this could be called :/");
         msg = msg.trim_matches(char::from(0)).to_string();
         //Handle twitch ping requests
-        if msg == "PING :tmi.twitch.tv\n" {
+        if msg == "PING :tmi.twitch.tv\r\n" {
             println!("Trying to PONG");
             stream.write_all(b"PONG :tmi.twitch.tv\n\r").expect("Could not send PONG to twitch servers!");
         }
