@@ -33,7 +33,8 @@ struct Context<'a>{
 
 }
 fn on_message(mut ctx: Context){
-    println!("{{\n  Username: {}\n  Channel: {}\n  Content: {}\n}}", ctx.message.username, ctx.message.channel, ctx.message.content);
+    println!("{}@{}: {}", ctx.message.username, ctx.message.channel, ctx.message.content);
+    // println!("{{\n  Username: {}\n  Channel: {}\n  Content: {}\n}}", ctx.message.username, ctx.message.channel, ctx.message.content);
     // Debug to see the trailing characters. 0D: \r, 0A: \n. 
     // http://dc.org/files/asciitable.pdf
     // hexdump::hexdump(ctx.message.content.as_bytes());
@@ -50,10 +51,10 @@ fn cmd1(mut ctx: Context){
     println!("Here is command 1");
 }
 fn main() -> std::io::Result<()> {
-    let prefix = "!";
+    let prefix = "omerdied.";
+    
     let mut stream = TcpStream::connect("irc.chat.twitch.tv:6667").expect("Connection to server failed!");
     let mut commands: HashMap<&str, Command> = HashMap::new();
-
     let command1 = Command{
         name: "Command #1",
         func: &cmd1
@@ -94,11 +95,11 @@ fn main() -> std::io::Result<()> {
     stream.write(b"PASS oauth:q9o9s9xyto1sffu72gwn5l6dmhleqd\n\r").expect("Failed to send password");
     stream.write(b"NICK liechtenstein\n\r").expect("Failed to send nickname");
     stream.write(b"JOIN #liechtenstein\n\r").expect("Failed to join channel");
-    stream.write(b"JOIN #primalzachfps\n\r").expect("Failed to join channel");
+    stream.write(b"JOIN #timthetatman\n\r").expect("Failed to join channel");
     /*
     Test send_message! macro.
     */
-    send_message!("liechtenstein", "Test");
+    // send_message!("liechtenstein", "Test");
     loop {
         //start 2kb buffer
         let mut buffer = vec![0; 2048];
@@ -122,9 +123,9 @@ fn main() -> std::io::Result<()> {
                 _stream: &stream
             };
             //call message event
-            print!("{:?}", m);
+            // print!("{:?}", m);
             //Create context object so commands can have proper information when invoked.
-            if m.content.starts_with("!"){
+            if m.content.starts_with(prefix){
                 let parts: Vec<&str> = m.content.split_ascii_whitespace().collect();
                 if parts[0].starts_with(prefix){
                     let command = &parts[0].replace(prefix, "");
