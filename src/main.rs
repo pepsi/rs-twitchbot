@@ -51,9 +51,9 @@ fn cmd1(mut ctx: Context){
     println!("Here is command 1");
 }
 fn main() -> std::io::Result<()> {
-    let prefix = "omerdied.";
+    let prefix: &str = "omerdied.";
     
-    let mut stream = TcpStream::connect("irc.chat.twitch.tv:6667").expect("Connection to server failed!");
+    let mut stream: TcpStream = TcpStream::connect("irc.chat.twitch.tv:6667").expect("Connection to server failed!");
     let mut commands: HashMap<&str, Command> = HashMap::new();
     let command1 = Command{
         name: "Command #1",
@@ -74,10 +74,7 @@ fn main() -> std::io::Result<()> {
         func: &|mut ctx|{
             let mut command_names: Vec<&str> = ctx.commands
                 .into_iter()
-                .map(|c|{
-                    println!("{}", c.0);
-                    return *c.0;
-                })
+                .map(|c| *c.0)
                 .collect();
                 command_names.sort_by(|a ,b| a.to_lowercase().cmp(&b.to_lowercase()));
             ctx.message.send_message(&format!("The list of valid commands are: {}", command_names.join(", ")));
@@ -95,14 +92,24 @@ fn main() -> std::io::Result<()> {
             let _w = stream.write_all(format!("PRIVMSG #{} :{}\n\r", $channel, $message).as_bytes());
         );
     }
+    macro_rules! join_channel {
+        ($channel:expr) => {
+            stream.write(format!("JOIN #{}\n\r", $channel).as_bytes()).expect("Failed to join channel");
+        };
+    }
     /*
     Doing this all manually so that i dont need to write macros that i only use once.
     */
     stream.write(format!("PASS {}\n\r", dotenv::var("oauth").unwrap()).as_bytes()).expect("Failed to send password");
     stream.write(b"NICK liechtenstein\n\r").expect("Failed to send nickname");
-    stream.write(b"JOIN #liechtenstein\n\r").expect("Failed to join channel");
-    stream.write(b"JOIN #timthetatman\n\r").expect("Failed to join channel");
-    stream.write(b"JOIN #xqcow\n\r").expect("Failed to join channel");
+    // stream.write(b"JOIN #liechtenstein\n\r").expect("Failed to join channel");
+    // stream.write(b"JOIN #timthetatman\n\r").expect("Failed to join channel");
+    // stream.write(b"JOIN #xqcow\n\r").expect("Failed to join channel");
+    join_channel!("liechtenstein");
+    join_channel!("timthetatman");
+    join_channel!("xqcow");
+    join_channel!("summit1g");
+
     /*
     Test send_message! macro.
     */
