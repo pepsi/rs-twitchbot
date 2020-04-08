@@ -9,3 +9,4 @@ edition = "2018"
 [dependencies]
 regex="1"
 hexdump = "0.1.0"
+dotenv = "0.15.0"

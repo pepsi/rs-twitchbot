@@ -4,9 +4,8 @@ use std::char;
 use regex::Regex;
 use hexdump;
 use std::collections::HashMap;
-
+use dotenv;
 // liechtenstein
-// oauth:q9o9s9xyto1sffu72gwn5l6dmhleqd
 #[derive(Debug)]
 struct Message<'a> {
     username: &'a str,
@@ -33,7 +32,7 @@ struct Context<'a>{
 
 }
 fn on_message(mut ctx: Context){
-    println!("{}@{}: {}", ctx.message.username, ctx.message.channel, ctx.message.content);
+    println!("{:>25}@{:<25}: {}", ctx.message.username, ctx.message.channel, ctx.message.content);
     // println!("{{\n  Username: {}\n  Channel: {}\n  Content: {}\n}}", ctx.message.username, ctx.message.channel, ctx.message.content);
     // Debug to see the trailing characters. 0D: \r, 0A: \n. 
     // http://dc.org/files/asciitable.pdf
@@ -66,6 +65,7 @@ fn main() -> std::io::Result<()> {
             println!("Inline Command 2");
         }
     };
+    dotenv::dotenv().ok();
     commands.insert("command-1", command1);
     commands.insert("command-2", command2);
     commands.insert("help", Command{
@@ -92,7 +92,7 @@ fn main() -> std::io::Result<()> {
     /*
     Doing this all manually so that i dont need to write macros that i only use once.
     */
-    stream.write(b"PASS oauth:q9o9s9xyto1sffu72gwn5l6dmhleqd\n\r").expect("Failed to send password");
+    stream.write(format!("PASS {}\n\r", dotenv::var("oauth").unwrap()).as_bytes()).expect("Failed to send password");
     stream.write(b"NICK liechtenstein\n\r").expect("Failed to send nickname");
     stream.write(b"JOIN #liechtenstein\n\r").expect("Failed to join channel");
     stream.write(b"JOIN #timthetatman\n\r").expect("Failed to join channel");
