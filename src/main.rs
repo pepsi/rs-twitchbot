@@ -14,9 +14,10 @@ struct Message<'a> {
     channel : &'a str,
     _stream : &'a TcpStream
 }
+
 struct Command<'a>{
     name: &'a str,
-    func: &'a dyn Fn()
+    func: &'a dyn Fn(Context)
 }
 impl Message<'_> {
     fn send_message(&mut self, message: &str){
@@ -24,17 +25,27 @@ impl Message<'_> {
         self._stream.write_all(format!("PRIVMSG #{} :{}\n\r", self.channel, message).as_bytes()).expect("Failed to send a message!");
     }
 }
-fn on_message(mut message: Message){
-    println!("{{\n  Username: {}\n  Channel: {}\n  Content: {}\n}}", message.username, message.channel, message.content);
+struct Context<'a>{
+    message: Message<'a>,
+    commands: &'a HashMap<&'a str, Command<'a>>
+}
+fn on_message(mut ctx: Context){
+    println!("{{\n  Username: {}\n  Channel: {}\n  Content: {}\n}}", ctx.message.username, ctx.message.channel, ctx.message.content);
     // Debug to see the trailing characters. 0D: \r, 0A: \n. 
     // http://dc.org/files/asciitable.pdf
-    hexdump::hexdump(message.content.as_bytes());
+    hexdump::hexdump(ctx.message.content.as_bytes());
 
-    if message.content == "!test"{
-        message.send_message("Test!");
+    if ctx.message.content == "!test"{
+        ctx.message.send_message("Test!");
     }
+    if ctx.message.content.starts_with("!command-1"){
+        (ctx.commands["command-1"].func)(ctx);
+    }
+
 }
-fn cmd1(){
+fn cmd1(mut ctx: Context){
+
+    ctx.message.send_message("Command 1 invoked!");
     println!("Here is command 1");
 }
 fn main() -> std::io::Result<()> {
@@ -42,19 +53,17 @@ fn main() -> std::io::Result<()> {
     let mut commands: HashMap<&str, Command> = HashMap::new();
 
     let command1 = Command{
-        name: "Command-1",
+        name: "Command #1",
         func: &cmd1
     }; 
     let command2 = Command{
-        name: "Command-2",
-        func: &||{
+        name: "Command #2",
+        func: &|test|{
             println!("Inline Command 2");
         }
     };
     commands.insert("command-1", command1);
     commands.insert("command-2", command2);
-
-    (commands["command-1"].func)();
     
     
     //Send message macro, not used much
@@ -98,7 +107,11 @@ fn main() -> std::io::Result<()> {
             };
             //call message event
             print!("{:?}", m);
-            on_message(m);
+            let ctx = Context{
+                message: m,
+                commands: &commands
+            };
+            on_message(ctx);
 
         }
     }
