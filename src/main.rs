@@ -5,7 +5,9 @@ use regex::Regex;
 use hexdump;
 use std::collections::HashMap;
 use dotenv;
-// liechtenstein
+/*
+    Structs
+*/
 #[derive(Debug)]
 struct Message<'a> {
     username: &'a str,
@@ -13,16 +15,9 @@ struct Message<'a> {
     channel : &'a str,
     _stream : &'a TcpStream
 }
-
 struct Command<'a>{
     name: &'a str,
     func: &'a dyn Fn(Context)
-}
-impl Message<'_> {
-    fn send_message(&mut self, message: &str){
-        println!("trying send message! C:{} n:{}", self.channel, message);
-        self._stream.write_all(format!("PRIVMSG #{} :{}\n\r", self.channel, message).as_bytes()).expect("Failed to send a message!");
-    }
 }
 struct Context<'a>{
     message: Message<'a>,
@@ -31,6 +26,15 @@ struct Context<'a>{
     args: Option<Vec<&'a str>>
 
 }
+impl Message<'_> {
+    fn send_message(&mut self, message: &str){
+        println!("trying send message! C:{} n:{}", self.channel, message);
+        self._stream.write_all(format!("PRIVMSG #{} :{}\n\r", self.channel, message).as_bytes()).expect("Failed to send a message!");
+    }
+}
+/*
+    Handlers
+*/
 fn on_message(mut ctx: Context){
     println!("{:>25}@{:<25}: {}", ctx.message.username, ctx.message.channel, ctx.message.content);
     /* 
@@ -53,10 +57,14 @@ fn get_prefix<'a>(message: &Message) -> &'a str{
         "omerdied."
     }
 }
+/*
+    Command tests
+*/
 fn cmd1(mut ctx: Context){
     ctx.message.send_message("Command 1 invoked!");
     println!("Here is command 1");
 }
+//Main function
 fn main() -> std::io::Result<()> {
     let channels = [
     //     "thegameawards",
