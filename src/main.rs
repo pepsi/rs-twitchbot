@@ -34,7 +34,7 @@ fn on_message(mut ctx: Context){
     // Debug to see the trailing characters. 0D: \r, 0A: \n. 
     // http://dc.org/files/asciitable.pdf
     hexdump::hexdump(ctx.message.content.as_bytes());
-
+    //hard coded commands. i need to remove.
     if ctx.message.content == "!test"{
         ctx.message.send_message("Test!");
     }
@@ -44,7 +44,6 @@ fn on_message(mut ctx: Context){
 
 }
 fn cmd1(mut ctx: Context){
-
     ctx.message.send_message("Command 1 invoked!");
     println!("Here is command 1");
 }
@@ -64,7 +63,6 @@ fn main() -> std::io::Result<()> {
     };
     commands.insert("command-1", command1);
     commands.insert("command-2", command2);
-    
     
     //Send message macro, not used much
     macro_rules! send_message {
@@ -107,6 +105,7 @@ fn main() -> std::io::Result<()> {
             };
             //call message event
             print!("{:?}", m);
+            //Create context object so commands can have proper information when invoked.
             let ctx = Context{
                 message: m,
                 commands: &commands
