@@ -32,10 +32,17 @@ struct Context<'a>{
 
 }
 fn on_message(mut ctx: Context){
-    println!("{:>25}@{:<25}: {}", ctx.message.username, ctx.message.channel, ctx.message.content);
-    // println!("{{\n  Username: {}\n  Channel: {}\n  Content: {}\n}}", ctx.message.username, ctx.message.channel, ctx.message.content);
-    // Debug to see the trailing characters. 0D: \r, 0A: \n. 
-    // http://dc.org/files/asciitable.pdf
+    let maxLength: u8 = 128;
+    let content = if ctx.message.content.len() > 100 {
+        &ctx.message.content[..100]
+    }else{
+        ctx.message.content
+    };
+    println!("{:>25}@{:<25}: {}", ctx.message.username, ctx.message.channel, content);
+    /* 
+    Debug to see the trailing characters. 0D: \r, 0A: \n. 
+    http://dc.org/files/asciitable.pdf
+    */
     // hexdump::hexdump(ctx.message.content.as_bytes());
 }
 fn on_command(mut ctx: Context){
@@ -96,6 +103,7 @@ fn main() -> std::io::Result<()> {
     stream.write(b"NICK liechtenstein\n\r").expect("Failed to send nickname");
     stream.write(b"JOIN #liechtenstein\n\r").expect("Failed to join channel");
     stream.write(b"JOIN #timthetatman\n\r").expect("Failed to join channel");
+    stream.write(b"JOIN #xqcow\n\r").expect("Failed to join channel");
     /*
     Test send_message! macro.
     */
