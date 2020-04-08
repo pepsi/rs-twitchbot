@@ -46,12 +46,18 @@ fn on_command(mut ctx: Context){
         ctx.message.send_message(&format!("Could not find command {}.", ctx.command_name.unwrap()));
     }
 }
+fn get_prefix<'a>(message: &Message) -> &'a str{
+    if message.channel == "liechtenstein" {
+        "!"
+    }else{
+        "omerdied."
+    }
+}
 fn cmd1(mut ctx: Context){
     ctx.message.send_message("Command 1 invoked!");
     println!("Here is command 1");
 }
 fn main() -> std::io::Result<()> {
-    let prefix: &str = "omerdied.";
     let channels = [
     //     "thegameawards",
     //  "dota2ti",
@@ -148,6 +154,7 @@ fn main() -> std::io::Result<()> {
             //call message event
             // print!("{:?}", m);
             //Create context object so commands can have proper information when invoked.
+            let prefix = get_prefix(&m);
             if m.content.starts_with(prefix){
                 let parts: Vec<&str> = m.content.split_ascii_whitespace().collect();
                 if parts[0].starts_with(prefix){
