@@ -1,1 +1,4 @@
 /target
+.env
+chat.log 
+Cargo.lock
