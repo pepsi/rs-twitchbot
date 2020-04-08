@@ -27,7 +27,10 @@ impl Message<'_> {
 }
 struct Context<'a>{
     message: Message<'a>,
-    commands: &'a HashMap<&'a str, Command<'a>>
+    commands: &'a HashMap<&'a str, Command<'a>>,
+    command_name: Option<&'a str>,
+    args: Option<Vec<&'a str>>
+
 }
 fn on_message(mut ctx: Context){
     println!("{{\n  Username: {}\n  Channel: {}\n  Content: {}\n}}", ctx.message.username, ctx.message.channel, ctx.message.content);
@@ -35,19 +38,21 @@ fn on_message(mut ctx: Context){
     // http://dc.org/files/asciitable.pdf
     hexdump::hexdump(ctx.message.content.as_bytes());
     //hard coded commands. i need to remove.
-    if ctx.message.content == "!test"{
-        ctx.message.send_message("Test!");
-    }
-    if ctx.message.content.starts_with("!command-1"){
-        (ctx.commands["command-1"].func)(ctx);
-    }
+   
 
+}
+fn on_command(mut ctx: Context){
+    if ctx.message.content == "!test"{
+        &ctx.message.send_message("Test!");
+    }
+    (ctx.commands[ctx.command_name.unwrap()].func)(ctx);
 }
 fn cmd1(mut ctx: Context){
     ctx.message.send_message("Command 1 invoked!");
     println!("Here is command 1");
 }
 fn main() -> std::io::Result<()> {
+    let prefix = "!";
     let mut stream = TcpStream::connect("irc.chat.twitch.tv:6667").expect("Connection to server failed!");
     let mut commands: HashMap<&str, Command> = HashMap::new();
 
@@ -106,12 +111,28 @@ fn main() -> std::io::Result<()> {
             //call message event
             print!("{:?}", m);
             //Create context object so commands can have proper information when invoked.
-            let ctx = Context{
-                message: m,
-                commands: &commands
-            };
-            on_message(ctx);
-
+            
+            if m.content.starts_with("!"){
+                let parts: Vec<&str> = m.content.split_ascii_whitespace().collect();
+                if parts[0].starts_with(prefix){
+                    let command = &parts[0].replace(prefix, "");
+                    let ctx = Context{
+                        message: m,
+                        commands: &commands,
+                        command_name: Some(command),
+                        args: Some(parts)
+                    };
+                    on_command(ctx);
+                }
+            }else{
+                let ctx = Context{
+                    message: m,
+                    commands: &commands,
+                    command_name: None,
+                    args: None
+                };
+                on_message(ctx);
+            }
         }
     }
 } 
