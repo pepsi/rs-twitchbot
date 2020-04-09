@@ -98,7 +98,7 @@ fn main() -> std::io::Result<()> {
     commands.insert("command-2", command2);
     commands.insert("help", Command{
         name: "Help",
-        func: &|mut ctx|{
+        func: &|mut ctx: Context|{
             let mut command_names: Vec<&str> = ctx.commands
                 .into_iter()
                 .map(|c| *c.0)
@@ -139,7 +139,7 @@ fn main() -> std::io::Result<()> {
     // send_message!("liechtenstein", "Test");
     loop {
         //start 2kb buffer
-        let mut buffer = vec![0; 2048];
+        let mut buffer: Vec<u8> = vec![0; 2048];
         //read stream into said buffer
         stream.read(&mut buffer)?;
         //convert buffer to string and trim null bytes from the end
@@ -147,7 +147,7 @@ fn main() -> std::io::Result<()> {
         if temp_msg.is_err(){
             continue;
         }
-        let mut msg = temp_msg.expect("I didnt think this could be called :/");
+        let mut msg: String = temp_msg.expect("I didnt think this could be called :/");
         msg = msg.trim_matches(char::from(0)).to_string();
         //Handle twitch ping requests
         if msg == "PING :tmi.twitch.tv\r\n" {
@@ -163,8 +163,6 @@ fn main() -> std::io::Result<()> {
                 content: &cap[3].replace("\n", "").replace("\r", ""),
                 _stream: &stream
             };
-            //call message event
-            // print!("{:?}", m);
             //Create context object so commands can have proper information when invoked.
             let prefix = get_prefix(&m);
             if m.content.starts_with(prefix){
