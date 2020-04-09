@@ -1,3 +1,4 @@
+#![allow(unused_imports)]
 use std::io::prelude::*;
 use std::net::TcpStream;
 use std::char;
@@ -15,6 +16,7 @@ struct Message<'a> {
     channel : &'a str,
     _stream : &'a TcpStream
 }
+#[allow(dead_code)] //so `name: &'a str` doesnt give an error. Should remove this when i use it.
 struct Command<'a>{
     name: &'a str,
     func: &'a dyn Fn(Context)
@@ -35,7 +37,7 @@ impl Message<'_> {
 /*
     Handlers
 */
-fn on_message(mut ctx: Context){
+fn on_message(ctx: Context){
     println!("{:>25}@{:<25}: {}", ctx.message.username, ctx.message.channel, ctx.message.content);
     /* 
     Debug to see the trailing characters. 0D: \r, 0A: \n. 
@@ -75,6 +77,7 @@ fn main() -> std::io::Result<()> {
     //      "brax",
     //       "myth",
     //        "drdisrespect",
+    "primalzachfps",
             "liechtenstein"
             ];
     let mut stream: TcpStream = TcpStream::connect("irc.chat.twitch.tv:6667").expect("Connection to server failed!");
@@ -111,6 +114,7 @@ fn main() -> std::io::Result<()> {
         }
     });
     //Send message macro, not used much
+    #[allow(unused_macros)]
     macro_rules! send_message {
         ($channel:expr, $message:expr) => (
             let _w = stream.write_all(format!("PRIVMSG #{} :{}\n\r", $channel, $message).as_bytes());
