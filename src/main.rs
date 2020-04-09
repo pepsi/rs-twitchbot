@@ -34,6 +34,11 @@ impl Message<'_> {
         self._stream.write_all(format!("PRIVMSG #{} :{}\n\r", self.channel, message).as_bytes()).expect("Failed to send a message!");
     }
 }
+impl Command<'_>{
+    fn invoke(&self, ctx: Context){
+        (self.func)(ctx);
+    }
+}
 /*
     Handlers
 */
@@ -47,7 +52,8 @@ fn on_message(ctx: Context){
 }
 fn on_command(mut ctx: Context){
     if ctx.commands.contains_key(ctx.command_name.unwrap()){
-        (ctx.commands[ctx.command_name.unwrap()].func)(ctx);
+        ctx.commands[ctx.command_name.unwrap()].invoke(ctx);
+        // (ctx.commands[ctx.command_name.unwrap()].func)(ctx);
     }else{
         ctx.message.send_message(&format!("Could not find command {}.", ctx.command_name.unwrap()));
     }
@@ -69,14 +75,14 @@ fn cmd1(mut ctx: Context){
 //Main function
 fn main() -> std::io::Result<()> {
     let channels = [
-    //     "thegameawards",
-    //  "dota2ti",
-    //   "fortnite",
-    //    "xqcow",
-    //     "timthetatman",
-    //      "brax",
-    //       "myth",
-    //        "drdisrespect",
+        "thegameawards",
+     "dota2ti",
+      "fortnite",
+       "xqcow",
+        "timthetatman",
+         "brax",
+          "myth",
+           "drdisrespect",
     "primalzachfps",
             "liechtenstein"
             ];
