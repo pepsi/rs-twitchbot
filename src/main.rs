@@ -30,7 +30,7 @@ struct Context<'a>{
 }
 impl Message<'_> {
     fn send_message(&mut self, message: &str){
-        println!("trying send message! C:{} n:{}", self.channel, message);
+        println!("<{:>25}@{:<25}: {}","Liechtenstein", self.channel, message);
         self._stream.write_all(format!("PRIVMSG #{} :{}\n\r", self.channel, message).as_bytes()).expect("Failed to send a message!");
     }
 }
@@ -43,7 +43,7 @@ impl Command<'_>{
     Handlers
 */
 fn on_message(ctx: Context){
-    println!("{:>25}@{:<25}: {}", ctx.message.username, ctx.message.channel, ctx.message.content);
+    println!(">{:>25}@{:<25}: {}", ctx.message.username, ctx.message.channel, ctx.message.content);
     /* 
     Debug to see the trailing characters. 0D: \r, 0A: \n. 
     http://dc.org/files/asciitable.pdf
