@@ -7,21 +7,22 @@ use hexdump;
 use std::collections::HashMap;
 use dotenv;
 /*
-    Structs
+    pub structs
 */
+
 #[derive(Debug)]
-struct Message<'a> {
+pub struct Message<'a> {
     username: &'a str,
     content : &'a str,
     channel : &'a str,
     _stream : &'a TcpStream
 }
 #[allow(dead_code)] //so `name: &'a str` doesnt give an error. Should remove this when i use it.
-struct Command<'a>{
+pub struct Command<'a>{
     name: &'a str,
     func: &'a dyn Fn(Context)
 }
-struct Context<'a>{
+pub struct Context<'a>{
     message: Message<'a>,
     commands: &'a HashMap<&'a str, Command<'a>>,
     command_name: Option<&'a str>,
@@ -76,13 +77,13 @@ fn cmd1(mut ctx: Context){
 fn main() -> std::io::Result<()> {
     let channels = [
         "thegameawards",
-     "dota2ti",
-      "fortnite",
-       "xqcow",
+    "dota2ti",
+    "fortnite",
+    "xqcow",
         "timthetatman",
-         "brax",
-          "myth",
-           "drdisrespect",
+        "brax",
+        "myth",
+        "drdisrespect",
     "primalzachfps",
             "liechtenstein"
             ];
